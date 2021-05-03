@@ -161,9 +161,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun calculateColorDistance(r1:String, g1:String, b1:String, r2:String, g2:String, b2:String): Double {
-        return Math.sqrt(Math.pow(r1.toDouble() - r2.toDouble(), 2.0)
-                + Math.pow(g1.toDouble() - g2.toDouble(), 2.0)
-                + Math.pow(b1.toDouble() - b2.toDouble(), 2.0))
+        return Math.sqrt(Math.pow(r2.toDouble() - r1.toDouble(), 2.0)
+                + Math.pow(g2.toDouble() - g1.toDouble(), 2.0)
+                + Math.pow(b2.toDouble() - b1.toDouble(), 2.0))
     }
 
     private fun calculateMinColorDistance(): Double {
@@ -241,7 +241,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
         var checkDistanceThread = Thread(checkDistance).start()
-
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
