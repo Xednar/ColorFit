@@ -2,6 +2,7 @@ package de.hs.colorpicker
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
@@ -11,10 +12,6 @@ import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.android.volley.AuthFailureError
-import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
 import kotlinx.android.synthetic.main.activity_main.*
 import java.nio.ByteBuffer
 import java.util.concurrent.ExecutorService
@@ -83,8 +80,8 @@ class MainActivity : AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
     private var currentColor = "0-0-0"
     private var firstColor: String? = null
-    private var colorResult: String? = null
-    private var recommendedColors: List<String>? = null
+    //private var colorResult: String? = null
+    private var recommendedColors: MutableList<String>? = null
     private var distance: Double? = null
 
     private lateinit var cameraExecutor: ExecutorService
@@ -108,7 +105,6 @@ class MainActivity : AppCompatActivity() {
         } }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
-
     }
 
     override fun onRequestPermissionsResult(
@@ -132,33 +128,46 @@ class MainActivity : AppCompatActivity() {
         firstColor = currentColor
         val rgbColors = firstColor!!.split("-")
 
-        val queue = Volley.newRequestQueue(this)
-       // val url = "http://thecolorapi.com/scheme?rgb=${rgbColors[0]},${rgbColors[1]},${rgbColors[2]}&format=json&mode=analogic&count=1"
-        val url = "http://colormind.io/api/"
-        val postRequest: StringRequest = object : StringRequest(Method.POST, url,
-                Response.Listener {
-                    response -> Log.d("Response", response)
-                    handleResponse(response) },
-                Response.ErrorListener {
-                    error -> handleResponse("result={[[${rgbColors[0]},${rgbColors[1]},${rgbColors[2]}]]}")
-                    Log.d("ERROR", "error => $error") }
-        ) {
-            // this is the relevant method
-            @Throws(AuthFailureError::class)
-            override fun getBody(): ByteArray {
-                val httpPostBody = "{\"input\":[[${rgbColors[0]}, ${rgbColors[1]}, ${rgbColors[2]}]],\"model\":\"default\"}"
-                return httpPostBody.toByteArray()
-            }
-        }
-        queue.add(postRequest)
+        calculateComplementaryColor(rgbColors)
+        calculateAnalogueColors(rgbColors)
     }
 
-    private fun handleResponse(response: String) {
-        colorResult = response
-        val colors = response.substring(11, response.length-4).replace("[", "")
-        recommendedColors = (colors.split("],"))
-        Toast.makeText(this, response, Toast.LENGTH_SHORT).show()
+    // Finding a complementary color is very simple in the RGB model. For any given color, for example, red (#FF0000),
+    // you need to find the color, which, after being added to red, creates white (0xFFFFFF). Naturally, all you need to do,
+    // is subtract red from white and get cyan (0xFFFFFF - 0xFF0000 = 0x00FFFF).
+    private fun calculateComplementaryColor(rgbColors: List<String>) {
+        val r = 255 - rgbColors[0].toInt()
+        val g = 255 - rgbColors[1].toInt()
+        val b = 255 - rgbColors[2].toInt()
+        val complementaryColor = r.toString() + "," + g.toString() +  "," + b.toString()
+        Log.d(TAG, "Komplementär: $r, $g, $b")
+       addRecommendedColor(complementaryColor)
     }
+
+    private fun calculateAnalogueColors(rgbColors: List<String>) {
+        val hsv = FloatArray(3)
+        var currentColor = Color.rgb(rgbColors[0].toInt(), rgbColors[1].toInt(), rgbColors[2].toInt())
+        Color.colorToHSV(currentColor, hsv);
+
+        hsv[0] = hsv[0].plus(30)
+        currentColor = Color.HSVToColor(hsv)
+        addRecommendedColor("${Color.red(currentColor)},${Color.green(currentColor)},${Color.blue(currentColor)}")
+        Log.d(TAG, "Analog+30: ${Color.red(currentColor)},${Color.green(currentColor)},${Color.blue(currentColor)}")
+
+        hsv[0] = hsv[0].minus(60)
+        currentColor = Color.HSVToColor(hsv)
+        addRecommendedColor("${Color.red(currentColor)},${Color.green(currentColor)},${Color.blue(currentColor)}")
+        Log.d(TAG, "Analog-30: ${Color.red(currentColor)},${Color.green(currentColor)},${Color.blue(currentColor)}")
+    }
+
+    private fun addRecommendedColor(color: String) {
+        if (recommendedColors == null) {
+            recommendedColors = mutableListOf(color)
+        } else {
+            recommendedColors!!.add(color)
+        }
+    }
+
 
     private fun calculateColorDistance(r1:String, g1:String, b1:String, r2:String, g2:String, b2:String): Double {
         return Math.sqrt(Math.pow(r2.toDouble() - r1.toDouble(), 2.0)
@@ -167,9 +176,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun calculateMinColorDistance(): Double {
-        val rgbColors1 = firstColor!!.split("-")
+       // val rgbColors1 = firstColor!!.split("-")
         val rgbColors2 = currentColor.split("-")
-        var distance = calculateColorDistance(rgbColors1[0], rgbColors1[1], rgbColors1[2], rgbColors2[0], rgbColors2[1], rgbColors2[2])
+        var distance = 999.0//calculateColorDistance(rgbColors1[0], rgbColors1[1], rgbColors1[2], rgbColors2[0], rgbColors2[1], rgbColors2[2])
         for (recommended: String in recommendedColors!!) {
             val color = recommended.split(",")
             val dist =  calculateColorDistance(color[0], color[1], color[2], rgbColors2[0], rgbColors2[1], rgbColors2[2])
@@ -228,19 +237,19 @@ class MainActivity : AppCompatActivity() {
 
         }, ContextCompat.getMainExecutor(this))
 
-        var checkDistance = Runnable {
-            var text = findViewById<TextView>(R.id.camera_capture_button)
+        val checkDistance = Runnable {
+            val text = findViewById<TextView>(R.id.color_name)
             while (true) {
-                if (distance != null && distance!! < 20) {
-                    runOnUiThread(Runnable {
-                        text.text = ("Matching Color $currentColor")
+                if (distance != null && distance!! < 3) {
+                    runOnUiThread({
+                        text.setText(currentColor)
                     }
                     )
                     break
                 }
             }
         }
-        var checkDistanceThread = Thread(checkDistance).start()
+        Thread(checkDistance).start()
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
