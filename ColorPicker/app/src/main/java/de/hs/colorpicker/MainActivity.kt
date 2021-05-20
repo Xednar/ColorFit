@@ -1,19 +1,23 @@
 package de.hs.colorpicker
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.hardware.camera2.CameraAccessException
+import android.hardware.camera2.CameraManager
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
+import androidx.camera.core.ImageCapture.FLASH_MODE_ON
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
-import java.nio.ByteBuffer
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -22,69 +26,16 @@ typealias ColorListener = (color: String) -> Unit
 
 class MainActivity : AppCompatActivity() {
 
-    class ColorAnalyzer(private val listener: ColorListener) : ImageAnalysis.Analyzer {
-
-        private fun ByteBuffer.toByteArray(): ByteArray {
-            rewind()    // Rewind the buffer to zero
-            val data = ByteArray(remaining())
-            get(data)   // Copy the buffer into a byte array
-            return data // Return the byte array
-        }
-
-
-        private fun getRGBfromYUV(image: ImageProxy): Triple<Double, Double, Double> {
-            val planes = image.planes
-
-            val height = image.height
-            val width = image.width
-
-            // Y
-            val yArr = planes[0].buffer
-            val yArrByteArray = yArr.toByteArray()
-            val yPixelStride = planes[0].pixelStride
-            val yRowStride = planes[0].rowStride
-
-            // U
-            val uArr = planes[1].buffer
-            val uArrByteArray =uArr.toByteArray()
-            val uPixelStride = planes[1].pixelStride
-            val uRowStride = planes[1].rowStride
-
-            // V
-            val vArr = planes[2].buffer
-            val vArrByteArray = vArr.toByteArray()
-            val vPixelStride = planes[2].pixelStride
-            val vRowStride = planes[2].rowStride
-
-            val y = yArrByteArray[(height * yRowStride + width * yPixelStride) / 2].toInt() and 255
-            val u = (uArrByteArray[(height * uRowStride + width * uPixelStride) / 4].toInt() and 255) - 128
-            val v = (vArrByteArray[(height * vRowStride + width * vPixelStride) / 4].toInt() and 255) - 128
-
-            val r = y + (1.370705 * v)
-            val g = y - (0.698001 * v) - (0.337633 * u)
-            val b = y + (1.732446 * u)
-
-            return Triple(Math.abs(r), Math.abs(g), Math.abs(b))
-        }
-
-
-        // analyze the color
-        override fun analyze(image: ImageProxy) {
-            val colors = getRGBfromYUV(image)
-            val hexColor = String.format("%d-%d-%d", colors.first.toInt(), colors.second.toInt(), colors.third.toInt())
-            listener(hexColor)
-            image.close()
-        }
-    }
+    private var currentState = States.START
 
     private var imageCapture: ImageCapture? = null
     private var currentColor = "0-0-0"
     private var firstColor: String? = null
-    //private var colorResult: String? = null
     private var recommendedColors: MutableList<String>? = null
     private var distance: Double? = null
 
     private lateinit var cameraExecutor: ExecutorService
+    private lateinit var camera: Camera
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,6 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         // Request camera permissions
         if (allPermissionsGranted()) {
+            //cameraManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
             startCamera()
         } else {
             ActivityCompat.requestPermissions(
@@ -100,23 +52,23 @@ class MainActivity : AppCompatActivity() {
 
         // Set up the listener for take photo button
         camera_capture_button.setOnClickListener {
-            if (recommendedColors == null) {
-            takeFirstColor()
-        } }
+            if (currentState == States.START) {
+                takeFirstColor()
+            } else {
+                Toast.makeText(this, "TODO: Add $currentColor", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
     override fun onRequestPermissionsResult(
-            requestCode: Int, permissions: Array<String>, grantResults:
-            IntArray) {
+            requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
                 startCamera()
             } else {
-                Toast.makeText(this,
-                        "Permissions not granted by the user.",
-                        Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show()
                 finish()
             }
         }
@@ -130,6 +82,8 @@ class MainActivity : AppCompatActivity() {
 
         calculateComplementaryColor(rgbColors)
         calculateAnalogueColors(rgbColors)
+
+        currentState = States.SCAN
     }
 
     // Finding a complementary color is very simple in the RGB model. For any given color, for example, red (#FF0000),
@@ -190,6 +144,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startCamera() {
+
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
         cameraProviderFuture.addListener(Runnable {
@@ -204,6 +159,7 @@ class MainActivity : AppCompatActivity() {
                     }
 
             imageCapture = ImageCapture.Builder()
+                .setFlashMode(FLASH_MODE_ON)
                     .build()
 
             val imageAnalyzer = ImageAnalysis.Builder()
@@ -228,8 +184,11 @@ class MainActivity : AppCompatActivity() {
                 cameraProvider.unbindAll()
 
                 // Bind use cases to camera
-                cameraProvider.bindToLifecycle(
-                        this, cameraSelector, preview, imageCapture, imageAnalyzer)
+                camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture, imageAnalyzer)
+
+                if ( camera.getCameraInfo().hasFlashUnit() ) {
+                    camera.getCameraControl().enableTorch(true); // or false
+                }
 
             } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
@@ -237,16 +196,33 @@ class MainActivity : AppCompatActivity() {
 
         }, ContextCompat.getMainExecutor(this))
 
+        val successSound = MediaPlayer.create(applicationContext, R.raw.sound_success)
+        val failureSound = MediaPlayer.create(applicationContext, R.raw.sound_failure)
         val checkDistance = Runnable {
-            val text = findViewById<TextView>(R.id.color_name)
+            val text = findViewById<TextView>(R.id.color_name2)
+
+
             while (true) {
-                if (distance != null && distance!! < 3) {
-                    runOnUiThread({
-                        text.setText(currentColor)
+
+                if (currentState == States.SCAN) {
+                    if (!failureSound.isPlaying) {
+                        failureSound.start()
                     }
-                    )
-                    break
+                    if (distance != null && distance!! < 10) {
+                        if (failureSound.isPlaying) {
+                            failureSound.stop()
+                        }
+                        if (!successSound.isPlaying) {
+                            successSound.start()
+                        }
+                        runOnUiThread({
+                            text.setText(currentColor)
+                        }
+                        )
+                        break
+                    }
                 }
+
             }
         }
         Thread(checkDistance).start()

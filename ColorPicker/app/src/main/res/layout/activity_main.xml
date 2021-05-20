@@ -10,13 +10,16 @@
     <androidx.camera.view.PreviewView
         android:id="@+id/viewFinder"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginBottom="200dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="126dp" />
 
     <Button
         android:id="@+id/camera_capture_button"
         android:layout_width="300dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="5dp"
         android:backgroundTint="#656464"
         android:elevation="2dp"
         android:scaleType="fitCenter"
@@ -27,19 +30,71 @@
         app:layout_constraintRight_toRightOf="parent"
         app:strokeColor="#FFFFFF" />
 
+
     <TextView
         android:id="@+id/color_name"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="80dp"
-        android:backgroundTint="#656464"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="5dp"
+        android:background="#D3D3D3"
+        android:backgroundTint="#D1D1D1"
         android:elevation="2dp"
+        android:gravity="center"
         android:scaleType="fitCenter"
-        android:text="Farbname"
-        android:textColorHighlight="#000000"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        android:text="@string/farbname"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="#000000"
+        android:textColorHighlight="#454545"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/camera_capture_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:strokeColor="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/color_name2"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="10dp"
+        android:background="#D3D3D3"
+        android:backgroundTint="#D1D1D1"
+        android:elevation="2dp"
+        android:gravity="center"
+        android:scaleType="fitCenter"
+        android:text="@string/farbname"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="#000000"
+        android:textColorHighlight="#454545"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/color_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:strokeColor="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/color_name3"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="10dp"
+        android:background="#D3D3D3"
+        android:backgroundTint="#D1D1D1"
+        android:elevation="2dp"
+        android:gravity="center"
+        android:scaleType="fitCenter"
+        android:text="@string/farbname"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="#000000"
+        android:textColorHighlight="#454545"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/color_name2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:strokeColor="#FFFFFF" />
 
     <ImageButton
@@ -78,5 +133,20 @@
         app:layout_constraintStart_toEndOf="@+id/imageButton3"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_dialog_info" />
+
+    <EditText
+        android:id="@+id/editTextTextPersonName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="100dp"
+        android:ems="10"
+        android:gravity="center"
+        android:inputType="textPersonName"
+        android:text="Please scann your first color!"
+        android:textAlignment="center"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/camera_capture_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

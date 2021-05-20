@@ -1,0 +1,2 @@
+Failure: https://freesound.org/people/Leszek_Szary/sounds/173958/
+success_bell: https://freesound.org/people/MattLeschuck/sounds/511484/
