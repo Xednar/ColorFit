@@ -43,7 +43,7 @@ class ColorName {
         return colorList
     }
     // get closes color name
-    fun getColorNameFromRgb(r: Int, g: Int, b: Int): String {
+     fun getColorNameFromRgb(r: Int, g: Int, b: Int): String {
         val colorList: ArrayList<ColorName>? = initColorList()
         var closestMatch: ColorName? = null
         var minMSE = Int.MAX_VALUE
