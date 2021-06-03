@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
 
     private var currentState = States.START
     private var torchActive = true
+    private var soundActive = true
 
     private var imageCapture: ImageCapture? = null
     private var currentColor = "0-0-0"
@@ -47,6 +48,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var colorName2TextView: TextView
     private lateinit var colorName3TextView: TextView
     private lateinit var flashButton: ImageButton
+    private lateinit var soundButton: ImageButton
     private lateinit var cameraButton: Button
 
     private var threadsRunning = false
@@ -64,8 +66,12 @@ class MainActivity : AppCompatActivity() {
         while (threadsRunning) {
             if (currentState != States.SCAN) continue
 
-            val successVolume = MathUtils.lerp(1.0f, 0.0f, 20.0f / Math.max(distance, 0.0000001f))
-            val failureVolume = Math.max(0.0f, 0.8f - successVolume)
+            var successVolume = MathUtils.lerp(1.0f, 0.0f, 20.0f / Math.max(distance, 0.0000001f))
+            var failureVolume = Math.max(0.0f, 0.8f - successVolume)
+            if (!soundActive) {
+                successVolume = 0F
+                failureVolume = 0F
+            }
 
             successSound.setVolume(successVolume, successVolume)
             failureSound.setVolume(failureVolume, failureVolume)
@@ -111,9 +117,9 @@ class MainActivity : AppCompatActivity() {
         failureSound.isLooping = true
         failureSound.setOnPreparedListener(MediaPlayer.OnPreparedListener { mediaPlayer ->  mediaPlayer.start(); mediaPlayer.setVolume(0.0f, 0.0f)})
 
-        colorName1TextView = findViewById<TextView>(R.id.ColorName1)
-        colorName2TextView = findViewById<TextView>(R.id.ColorName2)
-        colorName3TextView = findViewById<TextView>(R.id.ColorName3)
+        colorName1TextView = findViewById<TextView>(R.id.ColorName_1)
+        colorName2TextView = findViewById<TextView>(R.id.ColorName_2)
+        colorName3TextView = findViewById<TextView>(R.id.ColorName_3)
         flashButton = findViewById<ImageButton>(R.id.imageButton3)
         flashButton.setOnClickListener{
             torchActive = !torchActive
@@ -124,6 +130,15 @@ class MainActivity : AppCompatActivity() {
             }
             if ( camera.getCameraInfo().hasFlashUnit() ) {
                 camera.getCameraControl().enableTorch(torchActive)
+            }
+        }
+        soundButton = findViewById<ImageButton>(R.id.imageButton2)
+        soundButton.setOnClickListener{
+            soundActive = !soundActive
+            if (soundActive) {
+                soundButton.setImageResource(R.drawable.ic_baseline_volume_up_24)
+            } else {
+                soundButton.setImageResource(R.drawable.ic_baseline_volume_off_24)
             }
         }
         cameraButton = findViewById<Button>(R.id.camera_capture_button)
