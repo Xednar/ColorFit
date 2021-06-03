@@ -6,10 +6,7 @@ import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -48,6 +45,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var colorName1TextView: TextView
     private lateinit var colorName2TextView: TextView
     private lateinit var colorName3TextView: TextView
+    private lateinit var smileyImageView: ImageView
     private lateinit var flashButton: ImageButton
     private lateinit var soundButton: ImageButton
     private lateinit var deleteButton1: ImageButton
@@ -71,15 +69,41 @@ class MainActivity : AppCompatActivity() {
             if (currentState == States.START) {
                 successSound.setVolume(0F, 0F)
                 failureSound.setVolume(0F, 0F)
+                smileyImageView.setImageResource(R.drawable.ic_face_3)
             } else if (currentState == States.SCAN) {
-                var successVolume =
-                    MathUtils.lerp(1.0f, 0.0f, 20.0f / Math.max(distance, 0.0000001f))
-                var failureVolume = Math.max(0.0f, 0.8f - successVolume)
+                Log.i(TAG, "DISTANCE: $distance")
+
+                /*var successVolume = MathUtils.lerp(0.0f, 1.0f, 20.0f / Math.max(distance, 0.0000001f))
+                if (distance <= 20.0F) {
+                    successVolume = 1.0F
+                }*/
+                var successVolume = 1.0F
+
+                if (distance > 80) {
+                    successVolume = 0.0F
+                    smileyImageView.setImageResource(R.drawable.ic_face_1)
+                }
+                else if (distance > 60 && distance <= 80) {
+                    successVolume = 0.25F
+                    smileyImageView.setImageResource(R.drawable.ic_face_2)
+                }
+                else if (distance > 40 && distance <= 60) {
+                    successVolume = 0.5F
+                    smileyImageView.setImageResource(R.drawable.ic_face_3)
+                }
+                else if (distance > 20 && distance <= 40) {
+                    successVolume = 0.75F
+                    smileyImageView.setImageResource(R.drawable.ic_face_4)
+                }
+                else {
+                    smileyImageView.setImageResource(R.drawable.ic_face_5)
+                }
+                var failureVolume = 1.0f - successVolume
+
                 if (!soundActive) {
                     successVolume = 0F
                     failureVolume = 0F
                 }
-
                 successSound.setVolume(successVolume, successVolume)
                 failureSound.setVolume(failureVolume, failureVolume)
             }
@@ -204,6 +228,7 @@ class MainActivity : AppCompatActivity() {
             Thread(updateUI).start()
         }
         cameraButton = findViewById<Button>(R.id.camera_capture_button)
+        smileyImageView = findViewById<ImageView>(R.id.imageView)
         threadsRunning = true;
         Thread(checkDistance).start()
         Thread(updateUI).start()
