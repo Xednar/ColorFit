@@ -25,6 +25,8 @@ typealias ColorListener = (color: String) -> Unit
 
 class MainActivity : AppCompatActivity() {
 
+    private val colorNameObject = ColorName()
+
     private var currentState = States.START
     private var torchActive = true
     private var soundActive = true
@@ -90,12 +92,14 @@ class MainActivity : AppCompatActivity() {
 
         camera_capture_button.setOnClickListener {
            var canTakeColor = true
+            val rgb = currentColor.split("-")
+            val colorName = colorNameObject.getColorNameFromRgb(rgb.get(0).toInt(), rgb.get(1).toInt(), rgb.get(2).toInt())
             if (color1Name.isBlank()) {
-                color1Name = currentColor
+                color1Name = colorName + " " + currentColor
             } else if (color2Name.isBlank()) {
-                color2Name = currentColor
+                color2Name = colorName + " " + currentColor
             } else if (color3Name.isBlank()) {
-                color3Name = currentColor
+                color3Name = colorName + " " + currentColor
             } else {
                 canTakeColor = false
             }
