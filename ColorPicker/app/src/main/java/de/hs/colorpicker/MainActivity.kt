@@ -33,7 +33,6 @@ class MainActivity : AppCompatActivity() {
 
     private var imageCapture: ImageCapture? = null
     private var currentColor = "0-0-0"
-    private var firstColor: String? = null
     private var recommendedColors: MutableList<String>? = null
     private var distance = 9999.0f
 
@@ -213,8 +212,7 @@ class MainActivity : AppCompatActivity() {
     private fun takeColor() {
         if (imageCapture == null) return
 
-        firstColor = currentColor
-        val rgbColors = firstColor!!.split("-")
+        val rgbColors = currentColor.split("-")
 
         calculateComplementaryColor(rgbColors)
         calculateAnalogueColors(rgbColors)
@@ -297,10 +295,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun calculateMinColorDistance(): Float {
-        // val rgbColors1 = firstColor!!.split("-")
         val rgbColors2 = currentColor.split("-")
-        var distance =
-            999.0f//calculateColorDistance(rgbColors1[0], rgbColors1[1], rgbColors1[2], rgbColors2[0], rgbColors2[1], rgbColors2[2])
+        var distance = 999.0f
         for (recommended: String in recommendedColors!!) {
             val color = recommended.split(",")
             val dist = calculateColorDistance(
@@ -343,7 +339,6 @@ class MainActivity : AppCompatActivity() {
                             Log.d(TAG, "RGB: $rgb")
                         } else {
                             distance = calculateMinColorDistance()
-                            Log.d(TAG, "First: ${firstColor}, RGB: $rgb, Dist: $distance")
                         }
                         currentColor = rgb;
                     })
