@@ -47,7 +47,7 @@ class ColorName {
     // get closes color name
      fun getColorNameFromRgb(r: Int, g: Int, b: Int): String {
 
-        if (r > 50 && r < 200 && Math.abs(r-g) < 10 &&  Math.abs(r-b) < 10 && Math.abs(g-b)  < 10 ) {
+        if (r > 50 && r < 160 && Math.abs(r-g) < 10 &&  Math.abs(r-b) < 10 && Math.abs(g-b)  < 10 ) {
             return "Grey"
         }
 

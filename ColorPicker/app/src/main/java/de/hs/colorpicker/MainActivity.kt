@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     private var currentColor = "0-0-0"
     private var recommendedColors: MutableList<String>? = null
     private var distance = 9999.0f
+    private var previous_smiley_state = 3
 
     private var color1Name = ""
     private var color2Name = ""
@@ -86,23 +87,24 @@ class MainActivity : AppCompatActivity() {
                 }*/
                 var successVolume = 1.0F
 
+
                 if (distance > 80) {
                     successVolume = 0.0F
                     smileyImageView.setImageResource(R.drawable.ic_face_1)
                 }
-                else if (distance > 60 && distance <= 80) {
+                if (distance > 60 && distance <= 80) {
                     successVolume = 0.25F
                     smileyImageView.setImageResource(R.drawable.ic_face_2)
                 }
-                else if (distance > 40 && distance <= 60) {
+                if (distance > 40 && distance <= 60) {
                     successVolume = 0.5F
                     smileyImageView.setImageResource(R.drawable.ic_face_3)
                 }
-                else if (distance > 20 && distance <= 40) {
+                if (distance > 20 && distance <= 40) {
                     successVolume = 0.75F
                     smileyImageView.setImageResource(R.drawable.ic_face_4)
                 }
-                else {
+                if (distance <= 20) {
                     smileyImageView.setImageResource(R.drawable.ic_face_5)
                 }
                 var failureVolume = 1.0f - successVolume

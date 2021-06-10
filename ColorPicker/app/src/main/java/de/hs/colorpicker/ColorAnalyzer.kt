@@ -37,9 +37,33 @@ class ColorAnalyzer(private val listener: ColorListener) : ImageAnalysis.Analyze
         val vPixelStride = planes[2].pixelStride
         val vRowStride = planes[2].rowStride
 
-        val y = yArrByteArray[(height * yRowStride + width * yPixelStride) / 2].toInt() and 255
-        val u = (uArrByteArray[(height * uRowStride + width * uPixelStride) / 4].toInt() and 255) - 128
-        val v = (vArrByteArray[(height * vRowStride + width * vPixelStride) / 4].toInt() and 255) - 128
+        val yLeftMiddle = yArrByteArray[((height * yRowStride + width * yPixelStride) / 2) - 1].toInt() and 255
+        val uLeftMiddle= (uArrByteArray[((height * uRowStride + width * uPixelStride) / 4) - 2].toInt() and 255) - 128
+        val vLeftMiddle = (vArrByteArray[((height * vRowStride + width * vPixelStride) / 4) - 2].toInt() and 255) - 128
+
+        val yLeftTop = yArrByteArray[((height * yRowStride + width * yPixelStride) / 2) - width - 1].toInt() and 255
+        val uLeftTop = (uArrByteArray[((height * uRowStride + width * uPixelStride) / 4) - width*2 - 2].toInt() and 255) - 128
+        val vLeftTop = (vArrByteArray[((height * vRowStride + width * vPixelStride) / 4) -width*2- 2].toInt() and 255) - 128
+
+        val yMiddleMiddle = yArrByteArray[((height * yRowStride + width * yPixelStride) / 2)].toInt() and 255
+        val uMiddleMiddle = (uArrByteArray[((height * uRowStride + width * uPixelStride) / 4)].toInt() and 255) - 128
+        val vMiddleMiddle = (vArrByteArray[((height * vRowStride + width * vPixelStride) / 4)].toInt() and 255) - 128
+
+        val yMiddleTop = yArrByteArray[((height * yRowStride + width * yPixelStride) / 2) - width].toInt() and 255
+        val uMiddleTop = (uArrByteArray[((height * uRowStride + width * uPixelStride) / 4) - width*2].toInt() and 255) - 128
+        val vMiddleTop = (vArrByteArray[((height * vRowStride + width * vPixelStride) / 4) - width*2].toInt() and 255) - 128
+
+        val yRightMiddle = yArrByteArray[((height * yRowStride + width * yPixelStride) / 2) + 1].toInt() and 255
+        val uRightMiddle = (uArrByteArray[((height * uRowStride + width * uPixelStride) / 4) + 2].toInt() and 255) - 128
+        val vRightMiddle = (vArrByteArray[((height * vRowStride + width * vPixelStride) / 4) + 2].toInt() and 255) - 128
+
+        val yRightTop = yArrByteArray[((height * yRowStride + width * yPixelStride) / 2) - width + 1].toInt() and 255
+        val uRightTop = (uArrByteArray[((height * uRowStride + width * uPixelStride) / 4) -width*2 + 2].toInt() and 255) - 128
+        val vRightTop = (vArrByteArray[((height * vRowStride + width * vPixelStride) / 4) - width*2 + 2].toInt() and 255) - 128
+
+        val y = (yLeftMiddle + yMiddleMiddle + yRightMiddle + yLeftTop + yMiddleTop + yRightTop) / 6
+        val u = (uLeftMiddle + uMiddleMiddle + uRightMiddle + uLeftTop + uMiddleTop + uRightTop) / 6
+        val v = (vLeftMiddle + vMiddleMiddle + vRightMiddle + vLeftTop + vMiddleTop + vRightTop) / 6
 
         val r = y + (1.370705 * v)
         val g = y - (0.698001 * v) - (0.337633 * u)
