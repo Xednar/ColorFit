@@ -137,11 +137,11 @@ class MainActivity : AppCompatActivity() {
                 rgb.get(2).toInt()
             )
             if (color1Name.isBlank()) {
-                color1Name = colorName + " " + currentColor
+                color1Name = colorName + "#" + currentColor
             } else if (color2Name.isBlank()) {
-                color2Name = colorName + " " + currentColor
+                color2Name = colorName + "#" + currentColor
             } else if (color3Name.isBlank()) {
-                color3Name = colorName + " " + currentColor
+                color3Name = colorName + "#" + currentColor
             } else {
                 canTakeColor = false
             }
@@ -238,9 +238,32 @@ class MainActivity : AppCompatActivity() {
         infoLayerCloseButton.setOnClickListener {
             findViewById<ConstraintLayout>(R.id.info_layer).visibility = INVISIBLE
         }
+        infoButton1 = findViewById<ImageButton>(R.id.Info_1)
+        infoButton1.setOnClickListener {
+            if (color1Name.isNotBlank()) {
+                val colorName = color1Name.split("#")[0].split(" ").last()
+                findViewById<TextView>(R.id.Layer_Farbname).text = colorName
+                findViewById<TextView>(R.id.Layer_Info).text = getResources().getString(getResources().getIdentifier(colorName, "string", getPackageName()))
+                findViewById<ConstraintLayout>(R.id.info_layer).visibility = VISIBLE
+            }
+        }
+        infoButton2 = findViewById<ImageButton>(R.id.Info_2)
+        infoButton2.setOnClickListener {
+            if (color2Name.isNotBlank()) {
+                val colorName = color2Name.split("#")[0].split(" ").last()
+                findViewById<TextView>(R.id.Layer_Farbname).text = colorName
+                findViewById<TextView>(R.id.Layer_Info).text = getResources().getString(getResources().getIdentifier(colorName, "string", getPackageName()))
+                findViewById<ConstraintLayout>(R.id.info_layer).visibility = VISIBLE
+            }
+        }
         infoButton3 = findViewById<ImageButton>(R.id.Info_3)
         infoButton3.setOnClickListener {
-            findViewById<ConstraintLayout>(R.id.info_layer).visibility = VISIBLE
+            if (color2Name.isNotBlank()) {
+                val colorName = color3Name.split("#")[0].split(" ").last()
+                findViewById<TextView>(R.id.Layer_Farbname).text = colorName
+                findViewById<TextView>(R.id.Layer_Info).text = getResources().getString(getResources().getIdentifier(colorName, "string", getPackageName()))
+                findViewById<ConstraintLayout>(R.id.info_layer).visibility = VISIBLE
+            }
         }
         cameraButton = findViewById<Button>(R.id.camera_capture_button)
         smileyImageView = findViewById<ImageView>(R.id.imageView)

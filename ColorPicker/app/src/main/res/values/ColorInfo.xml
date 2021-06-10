@@ -26,10 +26,14 @@
     <string name="Brown">The color of the earth. Stability and a solid foundation is the message that emanates from the color brown. This color relates to things that are natural and simple. Brown is thought to be dull, but is reliable and wholesome. Although frugal and stingy, brown is a color of safety and quiet confidence; warm and reassuring.  Sadly, brown is among the least favourite colors, but conveys honesty and sincerity. On its own, brown seems unsophisticated, but when combined with others can become quite elegant.</string>
 
 <!--    <string name="Color_Gray">Gray</string>-->
-    <string name="Gray">The color of compromise. Grey is considered to be an unemotional, detatched color seeking to avoid attention. It conveys gloom and depression. Very conservative, grey has a stabilizing effect as it is very neutral, but can also conjure up feelings of frustration. Grey is linked with maturity and protection, being reliable and practical. Grey would not be considered a glamorous colour, yet is still elegant.</string>
+    <string name="Grey">The color of compromise. Grey is considered to be an unemotional, detatched color seeking to avoid attention. It conveys gloom and depression. Very conservative, grey has a stabilizing effect as it is very neutral, but can also conjure up feelings of frustration. Grey is linked with maturity and protection, being reliable and practical. Grey would not be considered a glamorous colour, yet is still elegant.</string>
 
 <!--    <string name="Color_Black">Black</string>-->
     <string name="Black">The color of mystery. Black is actually the lack of colour. It covers, hides and implies that there is a barrier. A strong and powerful color, black is formal and sophisticated, sexy and secretive. It is the color of things that are scary and evil. Black conveys pessimism and a lack of hope. While black has many negative associations, it is a colour that signifies power and control. It is considered unfriendly and intimidating, yet still refined, elegant and confident. Black is helpful to other colours, being a strong contrast and making them stand out more.</string>
+
+    <string name="White">Reverence, purity, birth, simplicity, cleanliness, peace, humility, precision, innocence, youth, winter, snow, good, sterility, marriage (Western cultures), death (Eastern cultures), cold, clinical.</string>
+    <string name="Magenta">Royalty, nobility, spirituality, ceremony, mysterious, transformation, wisdom, enlightenment, cruelty, honor, arrogance, mourning, temperance.</string>
+    <string name="Cyan">Symbolizes calm. Teal symbolizes sophistication. Aquamarine symbolizes water. Lighter turquoise has a feminine appeal.</string>
 
     https://graf1x.com/color-psychology-emotion-meaning-poster/
 </resources>

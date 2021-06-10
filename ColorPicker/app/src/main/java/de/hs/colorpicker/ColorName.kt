@@ -28,7 +28,7 @@ class ColorName {
         colorList.add(ColorName("Brown", 0x96, 0x4B, 48))
         colorList.add(ColorName("Violet", 0x88, 48, 220))
         colorList.add(ColorName("Dark Yellow", 110, 110, 48))
-        colorList.add(ColorName("Yellow", 220, 220, 48))
+        colorList.add(ColorName("Yellow", 200, 170, 48))
         colorList.add(ColorName("Dark Magenta", 110, 48, 110))
         colorList.add(ColorName("Magenta", 220, 48, 220))
         colorList.add(ColorName("Dark Cyan", 48, 110, 110))
