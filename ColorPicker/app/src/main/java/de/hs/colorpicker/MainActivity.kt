@@ -6,10 +6,13 @@ import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.math.MathUtils
@@ -51,6 +54,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var deleteButton1: ImageButton
     private lateinit var deleteButton2: ImageButton
     private lateinit var deleteButton3: ImageButton
+    private lateinit var infoButton1: ImageButton
+    private lateinit var infoButton2: ImageButton
+    private lateinit var infoButton3: ImageButton
+    private lateinit var infoLayerCloseButton: ImageButton
     private lateinit var cameraButton: Button
 
     private var threadsRunning = false
@@ -226,6 +233,14 @@ class MainActivity : AppCompatActivity() {
             removeRecommendedColorsForColorId(3)
             color3Name = ""
             Thread(updateUI).start()
+        }
+        infoLayerCloseButton = findViewById<ImageButton>(R.id.infoLayerExitButton)
+        infoLayerCloseButton.setOnClickListener {
+            findViewById<ConstraintLayout>(R.id.info_layer).visibility = INVISIBLE
+        }
+        infoButton3 = findViewById<ImageButton>(R.id.Info_3)
+        infoButton3.setOnClickListener {
+            findViewById<ConstraintLayout>(R.id.info_layer).visibility = VISIBLE
         }
         cameraButton = findViewById<Button>(R.id.camera_capture_button)
         smileyImageView = findViewById<ImageView>(R.id.imageView)

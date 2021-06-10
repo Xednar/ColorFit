@@ -23,27 +23,34 @@ class ColorName {
     //color list
     private fun initColorList(): ArrayList<ColorName>? {
         val colorList: ArrayList<ColorName> = ArrayList<ColorName>()
-        colorList.add(ColorName("Orange", 0xFF, 0x88, 0x00))
-        colorList.add(ColorName("Violet", 0x88, 0x00, 0xFF))
-        colorList.add(ColorName("Dark Yellow", 0x88, 0x88, 0x00))
-        colorList.add(ColorName("Yellow", 0xFF, 0xFF, 0x00))
-        colorList.add(ColorName("Dark Magenta", 0x88, 0x00, 0x88))
-        colorList.add(ColorName("Magenta", 0xFF, 0x00, 0xFF))
-        colorList.add(ColorName("Dark Cyan", 0xF0, 0x88, 0x88))
-        colorList.add(ColorName("Cyan", 0xF0, 0xFF, 0xFF))
-        colorList.add(ColorName("Dark Blue", 0xF0, 0xF8, 0x88))
-        colorList.add(ColorName("Blue", 0x00, 0x00, 0xFF))
-        colorList.add(ColorName("Dark Green", 0x00, 0x88, 0x00))
-        colorList.add(ColorName("Green", 0x00, 0xFF, 0x00))
-        colorList.add(ColorName("Dark Red", 0x88, 0x00, 0x00))
-        colorList.add(ColorName("Red", 0xFF, 0x00, 0x00))
-        colorList.add(ColorName("Grey", 0x88, 0x88, 0x88))
-        colorList.add(ColorName("Black", 0x00, 0x00, 0x00))
+        colorList.add(ColorName("White", 210, 210, 210))
+        colorList.add(ColorName("Orange", 220, 0x88, 48))
+        colorList.add(ColorName("Brown", 0x96, 0x4B, 48))
+        colorList.add(ColorName("Violet", 0x88, 48, 220))
+        colorList.add(ColorName("Dark Yellow", 110, 110, 48))
+        colorList.add(ColorName("Yellow", 220, 220, 48))
+        colorList.add(ColorName("Dark Magenta", 110, 48, 110))
+        colorList.add(ColorName("Magenta", 220, 48, 220))
+        colorList.add(ColorName("Dark Cyan", 48, 110, 110))
+        colorList.add(ColorName("Cyan", 48, 220, 220))
+        colorList.add(ColorName("Dark Blue", 48, 48, 110))
+        colorList.add(ColorName("Blue", 48, 48, 220))
+        colorList.add(ColorName("Dark Green", 48, 110, 48))
+        colorList.add(ColorName("Green", 48, 220, 48))
+        colorList.add(ColorName("Dark Red", 110, 48, 48))
+        colorList.add(ColorName("Red", 220, 48, 48))
+        //colorList.add(ColorName("Grey", 0x88, 0x88, 0x88))
+        colorList.add(ColorName("Black", 48, 48, 48))
         // Add more colors here
         return colorList
     }
     // get closes color name
      fun getColorNameFromRgb(r: Int, g: Int, b: Int): String {
+
+        if (r > 50 && r < 200 && Math.abs(r-g) < 10 &&  Math.abs(r-b) < 10 && Math.abs(g-b)  < 10 ) {
+            return "Grey"
+        }
+
         val colorList: ArrayList<ColorName>? = initColorList()
         var closestMatch: ColorName? = null
         var minMSE = Int.MAX_VALUE
