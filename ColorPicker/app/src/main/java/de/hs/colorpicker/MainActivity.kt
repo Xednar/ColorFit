@@ -34,8 +34,16 @@ class MainActivity : AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
     private var currentColor = "0-0-0"
     private var recommendedColors: MutableList<String>? = null
+
+    private var previous_small_smiley_state_1 = 3
+    private var previous_small_smiley_state_2 = 3
+    private var previous_small_smiley_state_3 = 3
+
     private var distance = 9999.0f
-    private var previous_smiley_state = 3
+    private var distanceTo1 = 9999.0f
+    private var distanceTo2 = 9999.0f
+    private var distanceTo3 = 9999.0f
+    private var previous_big_smiley_state = 3
 
     private var color1Name = ""
     private var color2Name = ""
@@ -49,7 +57,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var colorName1TextView: TextView
     private lateinit var colorName2TextView: TextView
     private lateinit var colorName3TextView: TextView
-    private lateinit var smileyImageView: ImageView
+    private lateinit var smileyBigImageView: ImageView
+    private lateinit var smileySmallImageView_1: ImageView
+    private lateinit var smileySmallImageView_2: ImageView
+    private lateinit var smileySmallImageView_3: ImageView
     private lateinit var flashButton: ImageButton
     private lateinit var soundButton: ImageButton
     private lateinit var deleteButton1: ImageButton
@@ -77,47 +88,45 @@ class MainActivity : AppCompatActivity() {
             if (currentState == States.START) {
                 successSound.setVolume(0F, 0F)
                 failureSound.setVolume(0F, 0F)
-                smileyImageView.setImageResource(R.drawable.ic_face_3)
+                smileyBigImageView.setImageResource(R.drawable.ic_face_3)
+                smileySmallImageView_1.setImageResource(R.drawable.face_small_3)
+                smileySmallImageView_2.setImageResource(R.drawable.face_small_3)
+                smileySmallImageView_3.setImageResource(R.drawable.face_small_3)
             } else if (currentState == States.SCAN) {
-                Log.i(TAG, "DISTANCE: $distance")
+                //Log.i(TAG, "DISTANCE: $distance")
 
-                /*var successVolume = MathUtils.lerp(0.0f, 1.0f, 20.0f / Math.max(distance, 0.0000001f))
-                if (distance <= 20.0F) {
-                    successVolume = 1.0F
-                }*/
                 var successVolume = 1.0F
 
-
-                if (distance > 85  && previous_smiley_state > 1) {
+                if (distance > 85  && previous_big_smiley_state > 1) {
                     successVolume = 0.0F
-                    previous_smiley_state = 1
-                    smileyImageView.setImageResource(R.drawable.ic_face_1)
+                    previous_big_smiley_state = 1
+                    smileyBigImageView.setImageResource(R.drawable.ic_face_1)
                 }
 
-                if ( (distance > 75  && previous_smiley_state < 2) || // 60 - 80
-                    (distance > 65 && previous_smiley_state > 2)) {
+                if ( (distance > 75  && previous_big_smiley_state < 2) || // 60 - 80
+                    (distance > 65 && previous_big_smiley_state > 2)) {
                     successVolume = 0.25F
-                    previous_smiley_state = 2
-                    smileyImageView.setImageResource(R.drawable.ic_face_2)
+                    previous_big_smiley_state = 2
+                    smileyBigImageView.setImageResource(R.drawable.ic_face_2)
                 }
 
-                if ( (distance > 55  && previous_smiley_state < 3) || // 40-60
-                    (distance > 45 && previous_smiley_state > 3)) {
+                if ( (distance > 55  && previous_big_smiley_state < 3) || // 40-60
+                    (distance > 45 && previous_big_smiley_state > 3)) {
                     successVolume = 0.5F
-                    previous_smiley_state = 3
-                    smileyImageView.setImageResource(R.drawable.ic_face_3)
+                    previous_big_smiley_state = 3
+                    smileyBigImageView.setImageResource(R.drawable.ic_face_3)
                 }
 
-                if ( (distance > 35  && previous_smiley_state < 4) || // 20-40
-                    (distance > 25 && previous_smiley_state > 4)) {
+                if ( (distance > 35  && previous_big_smiley_state < 4) || // 20-40
+                    (distance > 25 && previous_big_smiley_state > 4)) {
                     successVolume = 0.75F
-                    previous_smiley_state = 4
-                    smileyImageView.setImageResource(R.drawable.ic_face_4)
+                    previous_big_smiley_state = 4
+                    smileyBigImageView.setImageResource(R.drawable.ic_face_4)
                 }
 
-                if (distance <= 15 && previous_smiley_state < 5) {
-                    previous_smiley_state = 5
-                    smileyImageView.setImageResource(R.drawable.ic_face_5)
+                if (distance <= 15 && previous_big_smiley_state < 5) {
+                    previous_big_smiley_state = 5
+                    smileyBigImageView.setImageResource(R.drawable.ic_face_5)
                 }
                 var failureVolume = 1.0f - successVolume
 
@@ -127,6 +136,99 @@ class MainActivity : AppCompatActivity() {
                 }
                 successSound.setVolume(successVolume, successVolume)
                 failureSound.setVolume(failureVolume, failureVolume)
+
+
+                // update small smileys
+
+                // smiley 1
+                if (distanceTo1 > 85  && previous_small_smiley_state_1 > 1) {
+                    previous_small_smiley_state_1 = 1
+                    smileySmallImageView_1.setImageResource(R.drawable.face_small_1)
+                }
+
+                if ( (distanceTo1 > 75  && previous_small_smiley_state_1 < 2) || // 60 - 80
+                    (distanceTo1 > 65 && previous_small_smiley_state_1 > 2)) {
+                    previous_small_smiley_state_1 = 2
+                    smileySmallImageView_1.setImageResource(R.drawable.face_small_2)
+                }
+
+                if ( (distanceTo1 > 55  && previous_small_smiley_state_1 < 3) || // 40-60
+                    (distanceTo1 > 45 && previous_small_smiley_state_1 > 3)) {
+                    previous_small_smiley_state_1 = 3
+                    smileySmallImageView_1.setImageResource(R.drawable.face_small_3)
+                }
+
+                if ( (distanceTo1 > 35  && previous_small_smiley_state_1 < 4) || // 20-40
+                    (distanceTo1 > 25 && previous_small_smiley_state_1 > 4)) {
+                    previous_small_smiley_state_1 = 4
+                    smileySmallImageView_1.setImageResource(R.drawable.face_small_4)
+                }
+
+                if (distanceTo1 <= 15 && previous_small_smiley_state_1 < 5) {
+                    previous_small_smiley_state_1 = 5
+                    smileySmallImageView_1.setImageResource(R.drawable.face_small_5)
+                }
+
+                // smiley 2
+                if (distanceTo2 > 85  && previous_small_smiley_state_2 > 1) {
+                    previous_small_smiley_state_2 = 1
+                    smileySmallImageView_2.setImageResource(R.drawable.face_small_1)
+                }
+
+                if ( (distanceTo2 > 75  && previous_small_smiley_state_2 < 2) || // 60 - 80
+                    (distanceTo2 > 65 && previous_small_smiley_state_2 > 2)) {
+                    previous_small_smiley_state_2 = 2
+                    smileySmallImageView_2.setImageResource(R.drawable.face_small_2)
+                }
+
+                if ( (distanceTo2 > 55  && previous_small_smiley_state_2 < 3) || // 40-60
+                    (distanceTo2 > 45 && previous_small_smiley_state_2 > 3)) {
+                    previous_small_smiley_state_2 = 3
+                    smileySmallImageView_2.setImageResource(R.drawable.face_small_3)
+                }
+
+                if ( (distanceTo2 > 35  && previous_small_smiley_state_2 < 4) || // 20-40
+                    (distanceTo2 > 25 && previous_small_smiley_state_2 > 4)) {
+                    previous_small_smiley_state_2 = 4
+                    smileySmallImageView_2.setImageResource(R.drawable.face_small_4)
+                }
+
+                if (distanceTo2 <= 15 && previous_small_smiley_state_2 < 5) {
+                    previous_small_smiley_state_2 = 5
+                    smileySmallImageView_2.setImageResource(R.drawable.face_small_5)
+                }
+
+                // smiley 3
+                if (distanceTo3 > 85  && previous_small_smiley_state_3 > 1) {
+                    previous_small_smiley_state_3 = 1
+                    smileySmallImageView_3.setImageResource(R.drawable.face_small_1)
+                }
+
+                if ( (distanceTo3 > 75  && previous_small_smiley_state_3 < 2) || // 60 - 80
+                    (distanceTo3 > 65 && previous_small_smiley_state_3 > 2)) {
+                    previous_small_smiley_state_3 = 2
+                    smileySmallImageView_3.setImageResource(R.drawable.face_small_2)
+                }
+
+                if ( (distanceTo3 > 55  && previous_small_smiley_state_3 < 3) || // 40-60
+                    (distanceTo3 > 45 && previous_small_smiley_state_3 > 3)) {
+                    previous_small_smiley_state_3 = 3
+                    smileySmallImageView_3.setImageResource(R.drawable.face_small_3)
+                }
+
+                if ( (distanceTo3 > 35  && previous_small_smiley_state_3 < 4) || // 20-40
+                    (distanceTo3 > 25 && previous_small_smiley_state_3 > 4)) {
+                    previous_small_smiley_state_3 = 4
+                    smileySmallImageView_3.setImageResource(R.drawable.face_small_4)
+                }
+
+                if (distanceTo3 <= 15 && previous_small_smiley_state_3 < 5) {
+                    previous_small_smiley_state_3 = 5
+                    smileySmallImageView_3.setImageResource(R.drawable.face_small_5)
+                }
+
+
+
             }
             Thread.sleep(100)
         }
@@ -230,6 +332,7 @@ class MainActivity : AppCompatActivity() {
             color1Name = color2Name
             color2Name = color3Name
             color3Name = ""
+            previous_small_smiley_state_1 = 3
             if (color1Name.isBlank()) {
                 currentState = States.START
             }
@@ -240,12 +343,14 @@ class MainActivity : AppCompatActivity() {
             removeRecommendedColorsForColorId(2)
             color2Name = color3Name
             color3Name = ""
+            previous_small_smiley_state_2 = 3
             Thread(updateUI).start()
         }
         deleteButton3 = findViewById<ImageButton>(R.id.delete_3)
         deleteButton3.setOnClickListener {
             removeRecommendedColorsForColorId(3)
             color3Name = ""
+            previous_small_smiley_state_3 = 3
             Thread(updateUI).start()
         }
         infoLayerCloseButton = findViewById<ImageButton>(R.id.infoLayerExitButton)
@@ -280,7 +385,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
         cameraButton = findViewById<Button>(R.id.camera_capture_button)
-        smileyImageView = findViewById<ImageView>(R.id.imageView)
+        smileyBigImageView = findViewById<ImageView>(R.id.imageView)
+        smileySmallImageView_1 = findViewById<ImageView>(R.id.imageView4)
+        smileySmallImageView_2 = findViewById<ImageView>(R.id.imageView5)
+        smileySmallImageView_3 = findViewById<ImageView>(R.id.imageView6)
         threadsRunning = true;
         Thread(checkDistance).start()
         Thread(updateUI).start()
@@ -371,6 +479,91 @@ class MainActivity : AppCompatActivity() {
         ).toFloat()
     }
 
+
+    private fun calculateDistanceTo1(): Float {
+        val rgbColors2 = currentColor.split("-")
+        var distance = 999.0f
+        if (recommendedColors!!.size <= 0) {
+            return distance
+        }
+        val colorsToCompare = mutableListOf<String>()
+        colorsToCompare.add(recommendedColors?.get(0)!!)
+        colorsToCompare.add(recommendedColors?.get(1)!!)
+        colorsToCompare.add(recommendedColors?.get(2)!!)
+
+        for (recommended: String in colorsToCompare) {
+            val color = recommended.split(",")
+            val dist = calculateColorDistance(
+                color[0],
+                color[1],
+                color[2],
+                rgbColors2[0],
+                rgbColors2[1],
+                rgbColors2[2]
+            )
+            if (dist < distance) {
+                distance = dist
+            }
+        }
+        return distance
+    }
+
+    private fun calculateDistanceTo2(): Float {
+        val rgbColors2 = currentColor.split("-")
+        var distance = 999.0f
+        if (recommendedColors!!.size <= 3) {
+            return distance
+        }
+        val colorsToCompare = mutableListOf<String>()
+        colorsToCompare.add(recommendedColors?.get(3)!!)
+        colorsToCompare.add(recommendedColors?.get(4)!!)
+        colorsToCompare.add(recommendedColors?.get(5)!!)
+
+        for (recommended: String in colorsToCompare) {
+            val color = recommended.split(",")
+            val dist = calculateColorDistance(
+                color[0],
+                color[1],
+                color[2],
+                rgbColors2[0],
+                rgbColors2[1],
+                rgbColors2[2]
+            )
+            if (dist < distance) {
+                distance = dist
+            }
+        }
+        return distance
+    }
+
+    private fun calculateDistanceTo3(): Float {
+        val rgbColors2 = currentColor.split("-")
+        var distance = 999.0f
+        if (recommendedColors!!.size <= 6) {
+            return distance
+        }
+        val colorsToCompare = mutableListOf<String>()
+        colorsToCompare.add(recommendedColors?.get(6)!!)
+        colorsToCompare.add(recommendedColors?.get(7)!!)
+        colorsToCompare.add(recommendedColors?.get(8)!!)
+
+        for (recommended: String in colorsToCompare) {
+            val color = recommended.split(",")
+            val dist = calculateColorDistance(
+                color[0],
+                color[1],
+                color[2],
+                rgbColors2[0],
+                rgbColors2[1],
+                rgbColors2[2]
+            )
+            if (dist < distance) {
+                distance = dist
+            }
+        }
+        return distance
+    }
+
     private fun calculateMinColorDistance(): Float {
         val rgbColors2 = currentColor.split("-")
         var distance = 999.0f
@@ -416,6 +609,9 @@ class MainActivity : AppCompatActivity() {
                             Log.d(TAG, "RGB: $rgb")
                         } else {
                             distance = calculateMinColorDistance()
+                            distanceTo1 = calculateDistanceTo1()
+                            distanceTo2 = calculateDistanceTo2()
+                            distanceTo3 = calculateDistanceTo3()
                         }
                         currentColor = rgb;
                     })
