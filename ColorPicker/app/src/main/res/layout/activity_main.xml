@@ -54,6 +54,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/Layer_Farbname" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.camera.view.PreviewView
@@ -133,6 +134,15 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_baseline_info_24" />
 
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/Info_1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/face_small_1" />
+
         <ImageButton
             android:id="@+id/delete_1"
             android:layout_width="wrap_content"
@@ -176,6 +186,15 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_baseline_info_24" />
 
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/Info_2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/face_small_1" />
+
         <ImageButton
             android:id="@+id/delete_2"
             android:layout_width="wrap_content"
@@ -218,6 +237,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_baseline_info_24" />
+
+        <ImageView
+            android:id="@+id/imageView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/Info_3"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/face_small_1" />
 
         <ImageButton
             android:id="@+id/delete_3"
