@@ -81,12 +81,7 @@ class MainActivity : AppCompatActivity() {
             } else if (currentState == States.SCAN) {
                 Log.i(TAG, "DISTANCE: $distance")
 
-                /*var successVolume = MathUtils.lerp(0.0f, 1.0f, 20.0f / Math.max(distance, 0.0000001f))
-                if (distance <= 20.0F) {
-                    successVolume = 1.0F
-                }*/
                 var successVolume = 1.0F
-
 
                 if (distance > 85  && previous_smiley_state > 1) {
                     successVolume = 0.0F
@@ -128,7 +123,7 @@ class MainActivity : AppCompatActivity() {
                 successSound.setVolume(successVolume, successVolume)
                 failureSound.setVolume(failureVolume, failureVolume)
             }
-            Thread.sleep(100)
+            Thread.sleep(1000)
         }
     }
 
