@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
             if (currentState == States.START) {
                 successSound.setVolume(0F, 0F)
                 failureSound.setVolume(0F, 0F)
-                smileyBigImageView.setImageResource(R.drawable.ic_face_3)
+                smileyBigImageView.setImageResource(R.drawable.ic_face_5)
                 smileySmallImageView_1.setImageResource(R.drawable.face_small_5)
                 smileySmallImageView_2.setImageResource(R.drawable.face_small_5)
                 smileySmallImageView_3.setImageResource(R.drawable.face_small_5)
@@ -325,8 +325,12 @@ class MainActivity : AppCompatActivity() {
             color1Name = color2Name
             color2Name = color3Name
             color3Name = ""
-            previous_small_smiley_state_1 = 5
-            distanceTo1  = 9999.0F
+            previous_small_smiley_state_1 = previous_small_smiley_state_2
+            previous_small_smiley_state_2 = previous_small_smiley_state_3
+            previous_small_smiley_state_3 = 5
+            distanceTo1  = distanceTo2
+            distanceTo2  = distanceTo3
+            distanceTo3  = 9999.0F
             if (color1Name.isBlank()) {
                 currentState = States.START
             }
@@ -337,8 +341,10 @@ class MainActivity : AppCompatActivity() {
             removeRecommendedColorsForColorId(2)
             color2Name = color3Name
             color3Name = ""
-            previous_small_smiley_state_2 = 5
-            distanceTo2  = 9999.0F
+            previous_small_smiley_state_2 = previous_small_smiley_state_3
+            previous_small_smiley_state_3 = 5
+            distanceTo2  = distanceTo3
+            distanceTo3  = 9999.0F
             Thread(updateUI).start()
         }
         deleteButton3 = findViewById<ImageButton>(R.id.delete_3)
@@ -480,7 +486,6 @@ class MainActivity : AppCompatActivity() {
         ).toFloat()
     }
 
-
     @Synchronized
     private fun calculateDistanceTo1(): Float {
         val rgbColors2 = currentColor.split("-")
@@ -488,6 +493,7 @@ class MainActivity : AppCompatActivity() {
         if (recommendedColors!!.isEmpty()) {
             // TODO 1. zeile ausblenden
             distanceTo1 = 9999.0F
+            previous_small_smiley_state_1 = 5
             return distanceTo1
         }
         val colorsToCompare = mutableListOf<String?>()
@@ -520,6 +526,7 @@ class MainActivity : AppCompatActivity() {
         if (recommendedColors!!.size <= 3) {
             // TODO 2. zeile ausblenden
             distanceTo2 = 9999.0F
+            previous_small_smiley_state_2 = 5
             return distanceTo2
         }
         val colorsToCompare = mutableListOf<String?>()
@@ -552,6 +559,7 @@ class MainActivity : AppCompatActivity() {
         if (recommendedColors!!.size <= 6) {
             // TODO 3. zeile ausblenden
             distanceTo3 = 9999.0F
+            previous_small_smiley_state_3 = 5
             return distanceTo3
         }
         val colorsToCompare = mutableListOf<String?>()
@@ -626,6 +634,7 @@ class MainActivity : AppCompatActivity() {
                             distanceTo1 = calculateDistanceTo1()
                             distanceTo2 = calculateDistanceTo2()
                             distanceTo3 = calculateDistanceTo3()
+                            Log.d(TAG, "Distance1: $distanceTo1, Distance2: $distanceTo2, Distance3: $distanceTo3")
                            // distance = Math.min(distanceTo3, Math.min(distanceTo1, distanceTo2))
                         }
                         currentColor = rgb;
