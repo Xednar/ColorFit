@@ -33,17 +33,17 @@ class MainActivity : AppCompatActivity() {
 
     private var imageCapture: ImageCapture? = null
     private var currentColor = "0-0-0"
-    private var recommendedColors: MutableList<String>? = null
+    @Volatile private var recommendedColors: MutableList<String>? = null
 
-    private var previous_small_smiley_state_1 = 3
-    private var previous_small_smiley_state_2 = 3
-    private var previous_small_smiley_state_3 = 3
+    private var previous_small_smiley_state_1 = 5
+    private var previous_small_smiley_state_2 = 5
+    private var previous_small_smiley_state_3 = 5
 
-    private var distance = 9999.0f
+  //  private var distance = 9999.0f
     private var distanceTo1 = 9999.0f
     private var distanceTo2 = 9999.0f
     private var distanceTo3 = 9999.0f
-    private var previous_big_smiley_state = 3
+    //private var previous_big_smiley_state = 3
 
     private var color1Name = ""
     private var color2Name = ""
@@ -89,54 +89,11 @@ class MainActivity : AppCompatActivity() {
                 successSound.setVolume(0F, 0F)
                 failureSound.setVolume(0F, 0F)
                 smileyBigImageView.setImageResource(R.drawable.ic_face_3)
-                smileySmallImageView_1.setImageResource(R.drawable.face_small_3)
-                smileySmallImageView_2.setImageResource(R.drawable.face_small_3)
-                smileySmallImageView_3.setImageResource(R.drawable.face_small_3)
+                smileySmallImageView_1.setImageResource(R.drawable.face_small_5)
+                smileySmallImageView_2.setImageResource(R.drawable.face_small_5)
+                smileySmallImageView_3.setImageResource(R.drawable.face_small_5)
             } else if (currentState == States.SCAN) {
                 //Log.i(TAG, "DISTANCE: $distance")
-
-                var successVolume = 1.0F
-
-                if (distance > 85  && previous_big_smiley_state > 1) {
-                    successVolume = 0.0F
-                    previous_big_smiley_state = 1
-                    smileyBigImageView.setImageResource(R.drawable.ic_face_1)
-                }
-
-                if ( (distance > 75  && previous_big_smiley_state < 2) || // 60 - 80
-                    (distance > 65 && previous_big_smiley_state > 2)) {
-                    successVolume = 0.25F
-                    previous_big_smiley_state = 2
-                    smileyBigImageView.setImageResource(R.drawable.ic_face_2)
-                }
-
-                if ( (distance > 55  && previous_big_smiley_state < 3) || // 40-60
-                    (distance > 45 && previous_big_smiley_state > 3)) {
-                    successVolume = 0.5F
-                    previous_big_smiley_state = 3
-                    smileyBigImageView.setImageResource(R.drawable.ic_face_3)
-                }
-
-                if ( (distance > 35  && previous_big_smiley_state < 4) || // 20-40
-                    (distance > 25 && previous_big_smiley_state > 4)) {
-                    successVolume = 0.75F
-                    previous_big_smiley_state = 4
-                    smileyBigImageView.setImageResource(R.drawable.ic_face_4)
-                }
-
-                if (distance <= 15 && previous_big_smiley_state < 5) {
-                    previous_big_smiley_state = 5
-                    smileyBigImageView.setImageResource(R.drawable.ic_face_5)
-                }
-                var failureVolume = 1.0f - successVolume
-
-                if (!soundActive) {
-                    successVolume = 0F
-                    failureVolume = 0F
-                }
-                successSound.setVolume(successVolume, successVolume)
-                failureSound.setVolume(failureVolume, failureVolume)
-
 
                 // update small smileys
 
@@ -227,7 +184,42 @@ class MainActivity : AppCompatActivity() {
                     smileySmallImageView_3.setImageResource(R.drawable.face_small_5)
                 }
 
+                // big smiley and sound
+                var successVolume = 1.0F
+                val minImageState = Math.min(previous_small_smiley_state_1,
+                    Math.min(previous_small_smiley_state_2, previous_small_smiley_state_3))
 
+                if (minImageState == 1) {
+                    successVolume = 0.0F
+                    smileyBigImageView.setImageResource(R.drawable.ic_face_1)
+                }
+
+                else if (minImageState == 2) {
+                    successVolume = 0.25F
+                    smileyBigImageView.setImageResource(R.drawable.ic_face_2)
+                }
+
+                else if (minImageState == 3) {
+                    successVolume = 0.5F
+                    smileyBigImageView.setImageResource(R.drawable.ic_face_3)
+                }
+
+                else if (minImageState == 4) {
+                    successVolume = 0.75F
+                    smileyBigImageView.setImageResource(R.drawable.ic_face_4)
+                }
+
+                else if (minImageState == 5) {
+                    smileyBigImageView.setImageResource(R.drawable.ic_face_5)
+                }
+                var failureVolume = 1.0f - successVolume
+
+                if (!soundActive) {
+                    successVolume = 0F
+                    failureVolume = 0F
+                }
+                successSound.setVolume(successVolume, successVolume)
+                failureSound.setVolume(failureVolume, failureVolume)
 
             }
             Thread.sleep(100)
@@ -270,6 +262,7 @@ class MainActivity : AppCompatActivity() {
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
+    @Synchronized
     fun removeRecommendedColorsForColorId(id: Int) {
         val AMOUNT = 3
         val recommendedColorsCopy = recommendedColors?.toMutableList()
@@ -332,7 +325,8 @@ class MainActivity : AppCompatActivity() {
             color1Name = color2Name
             color2Name = color3Name
             color3Name = ""
-            previous_small_smiley_state_1 = 3
+            previous_small_smiley_state_1 = 5
+            distanceTo1  = 9999.0F
             if (color1Name.isBlank()) {
                 currentState = States.START
             }
@@ -343,14 +337,16 @@ class MainActivity : AppCompatActivity() {
             removeRecommendedColorsForColorId(2)
             color2Name = color3Name
             color3Name = ""
-            previous_small_smiley_state_2 = 3
+            previous_small_smiley_state_2 = 5
+            distanceTo2  = 9999.0F
             Thread(updateUI).start()
         }
         deleteButton3 = findViewById<ImageButton>(R.id.delete_3)
         deleteButton3.setOnClickListener {
             removeRecommendedColorsForColorId(3)
             color3Name = ""
-            previous_small_smiley_state_3 = 3
+            previous_small_smiley_state_3 = 5
+            distanceTo3 = 9999.0F
             Thread(updateUI).start()
         }
         infoLayerCloseButton = findViewById<ImageButton>(R.id.infoLayerExitButton)
@@ -394,6 +390,7 @@ class MainActivity : AppCompatActivity() {
         Thread(updateUI).start()
     }
 
+    @Synchronized
     private fun takeColor() {
         if (imageCapture == null) return
 
@@ -408,6 +405,7 @@ class MainActivity : AppCompatActivity() {
     // Finding a complementary color is very simple in the RGB model. For any given color, for example, red (#FF0000),
     // you need to find the color, which, after being added to red, creates white (0xFFFFFF). Naturally, all you need to do,
     // is subtract red from white and get cyan (0xFFFFFF - 0xFF0000 = 0x00FFFF).
+    @Synchronized
     private fun calculateComplementaryColor(rgbColors: List<String>) {
         val r = 255 - rgbColors[0].toInt()
         val g = 255 - rgbColors[1].toInt()
@@ -417,6 +415,7 @@ class MainActivity : AppCompatActivity() {
         addRecommendedColor(complementaryColor)
     }
 
+    @Synchronized
     private fun calculateAnalogueColors(rgbColors: List<String>) {
         val hsv = FloatArray(3)
         var currentColor =
@@ -456,6 +455,7 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    @Synchronized
     private fun addRecommendedColor(color: String) {
         if (recommendedColors == null) {
             recommendedColors = mutableListOf(color)
@@ -464,6 +464,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @Synchronized
     private fun calculateColorDistance(
         r1: String,
         g1: String,
@@ -480,18 +481,22 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    @Synchronized
     private fun calculateDistanceTo1(): Float {
         val rgbColors2 = currentColor.split("-")
         var distance = 999.0f
-        if (recommendedColors!!.size <= 0) {
-            return distance
+        if (recommendedColors!!.isEmpty()) {
+            // TODO 1. zeile ausblenden
+            distanceTo1 = 9999.0F
+            return distanceTo1
         }
-        val colorsToCompare = mutableListOf<String>()
-        colorsToCompare.add(recommendedColors?.get(0)!!)
-        colorsToCompare.add(recommendedColors?.get(1)!!)
-        colorsToCompare.add(recommendedColors?.get(2)!!)
+        val colorsToCompare = mutableListOf<String?>()
+        colorsToCompare.add(recommendedColors?.getOrNull(0))
+        colorsToCompare.add(recommendedColors?.getOrNull(1))
+        colorsToCompare.add(recommendedColors?.getOrNull(2))
 
-        for (recommended: String in colorsToCompare) {
+        for (recommended: String? in colorsToCompare) {
+            if (recommended == null)  continue
             val color = recommended.split(",")
             val dist = calculateColorDistance(
                 color[0],
@@ -508,18 +513,22 @@ class MainActivity : AppCompatActivity() {
         return distance
     }
 
+    @Synchronized
     private fun calculateDistanceTo2(): Float {
         val rgbColors2 = currentColor.split("-")
         var distance = 999.0f
         if (recommendedColors!!.size <= 3) {
-            return distance
+            // TODO 2. zeile ausblenden
+            distanceTo2 = 9999.0F
+            return distanceTo2
         }
-        val colorsToCompare = mutableListOf<String>()
-        colorsToCompare.add(recommendedColors?.get(3)!!)
-        colorsToCompare.add(recommendedColors?.get(4)!!)
-        colorsToCompare.add(recommendedColors?.get(5)!!)
+        val colorsToCompare = mutableListOf<String?>()
+        colorsToCompare.add(recommendedColors?.getOrNull(3))
+        colorsToCompare.add(recommendedColors?.getOrNull(4))
+        colorsToCompare.add(recommendedColors?.getOrNull(5))
 
-        for (recommended: String in colorsToCompare) {
+        for (recommended: String? in colorsToCompare) {
+            if (recommended == null)  continue
             val color = recommended.split(",")
             val dist = calculateColorDistance(
                 color[0],
@@ -536,18 +545,22 @@ class MainActivity : AppCompatActivity() {
         return distance
     }
 
+    @Synchronized
     private fun calculateDistanceTo3(): Float {
         val rgbColors2 = currentColor.split("-")
         var distance = 999.0f
         if (recommendedColors!!.size <= 6) {
-            return distance
+            // TODO 3. zeile ausblenden
+            distanceTo3 = 9999.0F
+            return distanceTo3
         }
-        val colorsToCompare = mutableListOf<String>()
-        colorsToCompare.add(recommendedColors?.get(6)!!)
-        colorsToCompare.add(recommendedColors?.get(7)!!)
-        colorsToCompare.add(recommendedColors?.get(8)!!)
+        val colorsToCompare = mutableListOf<String?>()
+        colorsToCompare.add(recommendedColors?.getOrNull(6))
+        colorsToCompare.add(recommendedColors?.getOrNull(7))
+        colorsToCompare.add(recommendedColors?.getOrNull(8))
 
-        for (recommended: String in colorsToCompare) {
+        for (recommended: String? in colorsToCompare) {
+            if (recommended == null)  continue
             val color = recommended.split(",")
             val dist = calculateColorDistance(
                 color[0],
@@ -564,6 +577,7 @@ class MainActivity : AppCompatActivity() {
         return distance
     }
 
+   /* @Synchronized
     private fun calculateMinColorDistance(): Float {
         val rgbColors2 = currentColor.split("-")
         var distance = 999.0f
@@ -582,7 +596,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return distance
-    }
+    }*/
 
     private fun startCamera() {
 
@@ -608,10 +622,11 @@ class MainActivity : AppCompatActivity() {
                         if (recommendedColors == null) {
                             Log.d(TAG, "RGB: $rgb")
                         } else {
-                            distance = calculateMinColorDistance()
+                            //distance = calculateMinColorDistance()
                             distanceTo1 = calculateDistanceTo1()
                             distanceTo2 = calculateDistanceTo2()
                             distanceTo3 = calculateDistanceTo3()
+                           // distance = Math.min(distanceTo3, Math.min(distanceTo1, distanceTo2))
                         }
                         currentColor = rgb;
                     })
