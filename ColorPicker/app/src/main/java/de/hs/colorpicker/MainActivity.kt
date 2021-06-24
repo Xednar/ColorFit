@@ -83,34 +83,34 @@ class MainActivity : AppCompatActivity() {
 
                 var successVolume = 1.0F
 
-                if (distance > 85  && previous_smiley_state > 1) {
+                if (distance > 85*2 ) {
                     successVolume = 0.0F
                     previous_smiley_state = 1
                     smileyImageView.setImageResource(R.drawable.ic_face_1)
                 }
 
-                if ( (distance > 75  && previous_smiley_state < 2) || // 60 - 80
-                    (distance > 65 && previous_smiley_state > 2)) {
+                else if ( (distance > 75*2  && previous_smiley_state < 2) || // 60 - 80
+                    (distance > 65*2 && previous_smiley_state >= 2)) {
                     successVolume = 0.25F
                     previous_smiley_state = 2
                     smileyImageView.setImageResource(R.drawable.ic_face_2)
                 }
 
-                if ( (distance > 55  && previous_smiley_state < 3) || // 40-60
-                    (distance > 45 && previous_smiley_state > 3)) {
+                else if ( (distance > 55*2  && previous_smiley_state < 3) || // 40-60
+                    (distance > 45*2 && previous_smiley_state >= 3)) {
                     successVolume = 0.5F
                     previous_smiley_state = 3
                     smileyImageView.setImageResource(R.drawable.ic_face_3)
                 }
 
-                if ( (distance > 35  && previous_smiley_state < 4) || // 20-40
-                    (distance > 25 && previous_smiley_state > 4)) {
+               else if ( (distance > 35*2  && previous_smiley_state < 4) || // 20-40
+                    (distance > 25*2 && previous_smiley_state >= 4)) {
                     successVolume = 0.75F
                     previous_smiley_state = 4
                     smileyImageView.setImageResource(R.drawable.ic_face_4)
                 }
 
-                if (distance <= 15 && previous_smiley_state < 5) {
+                else if (distance <= 15*2 && previous_smiley_state < 5) {
                     previous_smiley_state = 5
                     smileyImageView.setImageResource(R.drawable.ic_face_5)
                 }
@@ -123,7 +123,7 @@ class MainActivity : AppCompatActivity() {
                 successSound.setVolume(successVolume, successVolume)
                 failureSound.setVolume(failureVolume, failureVolume)
             }
-            Thread.sleep(1000)
+            Thread.sleep(100)
         }
     }
 
